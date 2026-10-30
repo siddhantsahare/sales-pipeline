@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { buildRowIds, refocus } from '../rules/rows.js';
 
 const initialState = {
   view: 'today',
@@ -60,3 +61,12 @@ export const {
   bulkProgress, bulkFinished, bulkDismissed, announced, simChanged,
 } = uiSlice.actions;
 export default uiSlice.reducer;
+
+/** Rebuilds the row order. Called only when the user asks, so rows never jump on their own. */
+export function rowsRefreshed() {
+  return (dispatch, getState) => {
+    const { deals, pending, ui } = getState();
+    const rowIds = buildRowIds(deals.byId, ui, pending, new Date());
+    dispatch(rowsSet({ rowIds, focusedId: refocus(ui.rowIds, rowIds, ui.focusedId) }));
+  };
+}

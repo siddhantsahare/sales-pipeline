@@ -1,0 +1,44 @@
+* { box-sizing: border-box; }
+body { margin: 0; font: 13px system-ui, sans-serif; color: #1a1f2b; background: #fff; }
+button, select, input { font: inherit; }
+:focus-visible { outline: 2px solid #2457d6; outline-offset: 1px; }
+
+.app { display: flex; flex-direction: column; height: 100vh; }
+
+.top-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #dde1e8; }
+.top-bar button[aria-pressed='true'] { background: #2457d6; color: #fff; }
+.top-bar input[type='search'] { width: 220px; padding: 3px 6px; }
+.push-right { margin-left: auto; }
+
+.stage-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #dde1e8; border-bottom: 1px solid #dde1e8; }
+.stage-strip button { display: flex; flex-direction: column; gap: 2px; padding: 6px 10px; border: 0; background: #f6f7f9; text-align: left; cursor: pointer; }
+.stage-strip button[aria-pressed='true'] { background: #dfe8fd; }
+.stage-strip span { color: #5b6475; }
+
+.table { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.scroller { flex: 1; overflow: auto; }
+.empty { padding: 24px; text-align: center; color: #5b6475; }
+
+.row {
+  display: grid;
+  grid-template-columns: 150px minmax(180px, 1fr) 110px 110px 80px 100px 100px minmax(170px, 1fr);
+  gap: 8px;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  border-bottom: 1px solid #eef0f4;
+  white-space: nowrap;
+}
+.row > span { overflow: hidden; text-overflow: ellipsis; }
+.scroller .row { position: absolute; top: 0; left: 0; width: 100%; }
+.header { flex: none; font-weight: 600; background: #f6f7f9; border-bottom: 1px solid #dde1e8; }
+.header button { padding: 0; border: 0; background: none; font-weight: 600; cursor: pointer; }
+.row.selected { background: #eef3ff; }
+.row.focused { box-shadow: inset 3px 0 0 #2457d6; background: #f3f6ff; }
+.row.problem { box-shadow: inset 3px 0 0 #c9302c; }
+.row.problem .status { color: #c9302c; font-weight: 600; }
+.reason { color: #a15c00; }
+.number { text-align: right; }
+.status { color: #5b6475; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
