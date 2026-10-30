@@ -1,6 +1,6 @@
 import { STAGES, STAGE_LABELS } from '../constants.js';
 
-export default function StagePicker({ count, onChoose }) {
+export default function StagePicker({ count, onChoose, onCancel }) {
   return (
     <div className="overlay" role="dialog" aria-label="Move to stage">
       <p>Move {count === 1 ? 'deal' : `${count.toLocaleString('en-IN')} deals`} to:</p>
@@ -13,7 +13,9 @@ export default function StagePicker({ count, onChoose }) {
           </li>
         ))}
       </ol>
-      <p className="hint"><kbd>→</kbd> next stage · <kbd>Esc</kbd> cancel</p>
+      <p className="hint">
+        <kbd>→</kbd> next stage · <button onClick={onCancel}>Cancel (Esc)</button>
+      </p>
     </div>
   );
 }

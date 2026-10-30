@@ -10,8 +10,9 @@ Two views: **My deals today** shows your open deals that need action, each with 
 
 - **Table, not a board.** Four of the five complaints suit a list: triage, bulk moves, keyboard use and stability. A board is mouse-led, selecting thousands of cards across columns is awkward, and a 10,000-card column can't be scanned. I rejected a table and board toggle too: it doubles the behaviour to build and avoids the decision.
 - **Visible rules, not a score.** A priority score gives one clean order, but its weights would be invented and reps can't see why a deal ranks highly.
-- **Row order is frozen.** Live re-sorting is the "deals keep jumping" complaint. Rows update in place, and a pill says how many updates are waiting. `u` applies them when the user is ready, keeping focus on the same deal.
+- **Row order is frozen.** Live re-sorting is the "deals keep jumping" complaint. Rows update in place. A small prompt appears only when deals have joined or left the list, and `u` or a click refreshes it when the user is ready, keeping focus on the same deal. An edit that doesn't change the list stays quiet, though a value edit can leave a sorted list slightly out of order until the next refresh.
 - **Failures persist.** A toast that fades is how "nobody told me" happens, so a failed row keeps a red marker until it is dealt with. A count in the top bar opens the failed deals.
+- **Keyboard-first, but discoverable.** My first version hid moves behind shortcuts, and a new user had no idea how to change a deal. So every row now has a stage dropdown, a checkbox and a Retry button, with a one-line hint, and the shortcuts sit on top for heavy users.
 - **Bulk moves show consequences.** Selection captures the exact IDs at that moment, so new matches aren't swept in, and moves above 100 deals ask for confirmation.
 
 ## Failed saves and teammates' changes

@@ -20,7 +20,7 @@ export default function BulkBar({ selectedCount, onMove }) {
     <section className="bulk-bar" role="status">
       {selectedCount > 0 && (
         <span>
-          {count(selectedCount)} selected <button onClick={onMove}>Move to… (m)</button>
+          {count(selectedCount)} selected <button onClick={onMove}>Move to stage… (m)</button>
         </span>
       )}
       {bulk?.active && <span>Saving {count(done)} of {count(bulk.total)}…</span>}

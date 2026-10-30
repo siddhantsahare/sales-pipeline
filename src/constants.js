@@ -17,6 +17,12 @@ export const OWNERS = [
   'Meera', 'Karan', 'Divya', 'Sanjay', 'Pooja', 'Nikhil', 'Sneha', 'Varun', 'Tara', 'Manish',
 ];
 
+export const UNDO_MESSAGES = {
+  ok: 'Move undone',
+  blocked: "Can't undo: a teammate has changed this deal since",
+  empty: 'Nothing to undo',
+};
+
 export const BATCH_SIZE = 200;
 export const MAX_REQUESTS = 3;
 export const BULK_CONFIRM_ABOVE = 100;

@@ -4,7 +4,7 @@ import {
   moveCleared, moveConflicted, moveWaiting, movesFailed, movesQueued, movesSaved, movesSent,
 } from '../store/pendingSlice.js';
 import { selectDisplayDeal } from '../store/selectors.js';
-import { announced, bulkFinished, bulkProgress, bulkStarted, updatesCounted } from '../store/uiSlice.js';
+import { announced, bulkFinished, bulkProgress, bulkStarted, listChangesNoted } from '../store/uiSlice.js';
 
 /**
  * Owns every save. A deal has at most one move in flight and one waiting, so
@@ -61,7 +61,7 @@ export function createSyncEngine({ api, store }) {
     store.dispatch(dealsUpdated(results.map((result) => result.deal)));
     saved.forEach((result) => lastSavedVersion.set(result.dealId, result.deal.version));
     store.dispatch(movesSaved(saved.map(({ dealId, deal }) => ({ dealId, version: deal.version }))));
-    store.dispatch(updatesCounted(savedIds.length));
+    store.dispatch(listChangesNoted(saved.map((result) => result.deal)));
     for (const { dealId, deal } of conflicts) {
       forgetUndo(dealId, state().pending[dealId].toStage);
       store.dispatch(moveConflicted({ dealId, deal }));

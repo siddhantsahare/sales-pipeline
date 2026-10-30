@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { buildRowIds, refocus } from '../rules/rows.js';
+import { buildRowIds, matchesFilters, refocus } from '../rules/rows.js';
+import { applyPending } from './selectors.js';
 
 const initialState = {
   view: 'today',
@@ -9,7 +10,7 @@ const initialState = {
   rowIds: [],
   focusedId: null,
   selectedIds: {}, // Object, not array: each row checks membership on render.
-  updateCount: 0,
+  changedIds: {}, // Deals whose place in the list is out of date until the user refreshes.
   bulk: null,
   announcement: '',
   sim: { minDelay: 300, maxDelay: 1500, failureRate: 0.1, editsPerMinute: 60, paused: false },
@@ -26,7 +27,7 @@ const uiSlice = createSlice({
     rowsSet(state, action) {
       state.rowIds = action.payload.rowIds;
       state.focusedId = action.payload.focusedId;
-      state.updateCount = 0;
+      state.changedIds = {};
     },
     focusChanged(state, action) { state.focusedId = action.payload; },
     selectionToggled(state, action) {
@@ -37,7 +38,12 @@ const uiSlice = createSlice({
       state.selectedIds = Object.fromEntries(state.rowIds.map((id) => [id, true]));
     },
     selectionCleared(state) { state.selectedIds = {}; },
-    updatesCounted(state, action) { state.updateCount += action.payload; },
+    listChangesSet(state, action) {
+      for (const [id, outOfDate] of action.payload) {
+        if (outOfDate) state.changedIds[id] = true;
+        else delete state.changedIds[id];
+      }
+    },
     bulkStarted(state, action) {
       const { total, skipped = 0 } = action.payload;
       if (state.bulk?.active) {
@@ -62,7 +68,7 @@ const uiSlice = createSlice({
 
 export const {
   viewChanged, filtersChanged, sortChanged, currentUserChanged, rowsSet, focusChanged,
-  selectionToggled, selectAllVisible, selectionCleared, updatesCounted, bulkStarted,
+  selectionToggled, selectAllVisible, selectionCleared, listChangesSet, bulkStarted,
   bulkProgress, bulkFinished, bulkDismissed, announced, simChanged,
 } = uiSlice.actions;
 export default uiSlice.reducer;
@@ -73,5 +79,19 @@ export function rowsRefreshed() {
     const { deals, pending, ui } = getState();
     const rowIds = buildRowIds(deals.byId, ui, pending, new Date());
     dispatch(rowsSet({ rowIds, focusedId: refocus(ui.rowIds, rowIds, ui.focusedId) }));
+  };
+}
+
+/** Notes which changed deals now belong in, or out of, the list on screen. */
+export function listChangesNoted(deals) {
+  return (dispatch, getState) => {
+    const { pending, ui } = getState();
+    const listed = new Set(ui.rowIds);
+    const today = new Date();
+    const entries = deals.map((deal) => {
+      const matches = matchesFilters(applyPending(deal, pending[deal.id]), ui, pending[deal.id], today);
+      return [deal.id, matches !== listed.has(deal.id)];
+    });
+    if (entries.some(([id, outOfDate]) => outOfDate || ui.changedIds[id])) dispatch(listChangesSet(entries));
   };
 }

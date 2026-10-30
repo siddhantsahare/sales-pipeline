@@ -1,18 +1,12 @@
 import { useEffect } from 'react';
 import { useDispatch, useStore } from 'react-redux';
-import { STAGES } from '../constants.js';
+import { STAGES, UNDO_MESSAGES } from '../constants.js';
 import { selectDisplayDeal } from '../store/selectors.js';
 import {
   announced, focusChanged, rowsRefreshed, selectAllVisible, selectionCleared, selectionToggled,
 } from '../store/uiSlice.js';
 import { useEngine } from '../sync/EngineContext.js';
 import { resolveKey } from './keymap.js';
-
-const UNDO_MESSAGES = {
-  ok: 'Move undone',
-  blocked: "Can't undo: a teammate has changed this deal since",
-  empty: 'Nothing to undo',
-};
 
 function isTypingTarget(element) {
   if (element.tagName === 'SELECT' || element.tagName === 'TEXTAREA') return true;

@@ -2,10 +2,9 @@ import { useEffect, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useDispatch, useSelector } from 'react-redux';
 import { ROW_HEIGHT } from '../constants.js';
-import { rowsRefreshed, sortChanged } from '../store/uiSlice.js';
+import { rowsRefreshed, selectAllVisible, selectionCleared, sortChanged } from '../store/uiSlice.js';
 import { useEngine } from '../sync/EngineContext.js';
 import DealRow from './DealRow.jsx';
-import UpdatesPill from './UpdatesPill.jsx';
 
 const COLUMNS = [
   ['reason', 'Why today', false],
@@ -24,6 +23,8 @@ export default function DealTable() {
   const rowIds = useSelector((state) => state.ui.rowIds);
   const focusedId = useSelector((state) => state.ui.focusedId);
   const sort = useSelector((state) => state.ui.sort);
+  const selectedCount = useSelector((state) => Object.keys(state.ui.selectedIds).length);
+  const allSelected = rowIds.length > 0 && selectedCount === rowIds.length;
   const scrollerRef = useRef(null);
 
   const virtualizer = useVirtualizer({
@@ -60,6 +61,14 @@ export default function DealTable() {
       aria-activedescendant={focusedId ? `row-${focusedId}` : undefined}
     >
       <div className="row header" role="row">
+        <span role="columnheader">
+          <input
+            type="checkbox"
+            aria-label="Select all listed deals"
+            checked={allSelected}
+            onChange={() => dispatch(allSelected ? selectionCleared() : selectAllVisible())}
+          />
+        </span>
         {COLUMNS.map(([key, label, sortable]) => (
           <span key={key} role="columnheader" aria-sort={sort.key === key ? `${sort.dir}ending` : 'none'}>
             {sortable ? <button onClick={() => toggleSort(key)}>{label}</button> : label}
@@ -67,7 +76,6 @@ export default function DealTable() {
         ))}
       </div>
       {rowIds.length === 0 && <p className="empty">No deals match this view.</p>}
-      <UpdatesPill />
       <div className="scroller" ref={scrollerRef}>
         <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
           {items.map((item) => (

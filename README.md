@@ -16,6 +16,16 @@ This installs dependencies and opens the app at http://localhost:5173. To run th
 npm test
 ```
 
+## Using it
+
+- **Move a deal:** change the Stage dropdown on its row.
+- **Move many deals:** tick their boxes, or the box in the header for every listed deal, then choose **Move to stage…**.
+- **Fix a failed save:** press **Retry** on the red row, or tick **Failed** to list them all.
+
+- **Undo:** press **Undo** in the top bar.
+
+Everything works with a mouse or the keyboard.
+
 ## Shortcuts
 
 | Key | Action |
@@ -27,7 +37,7 @@ npm test
 | `/` | Search |
 | `Ctrl+Z` | Undo last move |
 | `r` | Retry failed save |
-| `u` | Apply pending updates |
+| `u` | Refresh the list when deals have changed |
 | `Esc` | Close, or clear selection |
 | `?` | Show shortcuts |
 | `Tab` | Reach every other control, including sorting, Keep theirs and Apply mine |

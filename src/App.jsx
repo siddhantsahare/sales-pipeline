@@ -8,6 +8,7 @@ import SimPanel from './components/SimPanel.jsx';
 import StagePicker from './components/StagePicker.jsx';
 import StageStrip from './components/StageStrip.jsx';
 import TopBar from './components/TopBar.jsx';
+import UpdatesPill from './components/UpdatesPill.jsx';
 import { BULK_CONFIRM_ABOVE, STAGE_LABELS } from './constants.js';
 import { useKeyboard } from './keyboard/useKeyboard.js';
 import { selectionCleared } from './store/uiSlice.js';
@@ -46,11 +47,17 @@ export default function App() {
 
   return (
     <div className="app">
-      <TopBar />
+      <TopBar onShowShortcuts={() => setHelpOpen(true)} />
       <StageStrip />
+      <p className="hint-line">
+        Change a deal's stage from its row, or tick several to move them together. Press <kbd>?</kbd> for shortcuts.
+        <UpdatesPill />
+      </p>
       <DealTable />
       <BulkBar selectedCount={selectedCount} onMove={() => setPickerOpen(true)} />
-      {pickerOpen && <StagePicker count={selectedCount || 1} onChoose={moveToStage} />}
+      {pickerOpen && (
+        <StagePicker count={selectedCount || 1} onChoose={moveToStage} onCancel={() => setPickerOpen(false)} />
+      )}
       {confirmStage && (
         <div className="overlay" role="alertdialog" aria-label="Confirm bulk move">
           <p>Move {selectedCount.toLocaleString('en-IN')} deals to {STAGE_LABELS[confirmStage]}?</p>
@@ -58,7 +65,7 @@ export default function App() {
           <button onClick={() => setConfirmStage(null)}>Cancel (Esc)</button>
         </div>
       )}
-      {helpOpen && <ShortcutHelp />}
+      {helpOpen && <ShortcutHelp onClose={() => setHelpOpen(false)} />}
       <SimPanel />
       <LiveRegion />
     </div>

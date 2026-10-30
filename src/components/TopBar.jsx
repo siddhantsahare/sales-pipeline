@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { OWNERS } from '../constants.js';
+import { OWNERS, UNDO_MESSAGES } from '../constants.js';
 import { selectFailedCount } from '../store/selectors.js';
 import {
-  currentUserChanged, filtersChanged, rowsRefreshed, viewChanged,
+  announced, currentUserChanged, filtersChanged, rowsRefreshed, viewChanged,
 } from '../store/uiSlice.js';
+import { useEngine } from '../sync/EngineContext.js';
 
 const VIEWS = [['today', 'My deals today'], ['all', 'All deals']];
 const SEARCH_PAUSE_MS = 150;
 
-export default function TopBar() {
+export default function TopBar({ onShowShortcuts }) {
   const dispatch = useDispatch();
+  const { engine } = useEngine();
   const view = useSelector((state) => state.ui.view);
   const filters = useSelector((state) => state.ui.filters);
   const currentUser = useSelector((state) => state.ui.currentUser);
@@ -74,7 +76,11 @@ export default function TopBar() {
           {failedCount.toLocaleString('en-IN')} need attention
         </button>
       )}
-      <label className="push-right">
+      <button className="push-right" onClick={() => dispatch(announced(UNDO_MESSAGES[engine.undo()]))}>
+        Undo
+      </button>
+      <button onClick={onShowShortcuts}>Shortcuts</button>
+      <label>
         Viewing as{' '}
         <select value={currentUser} onChange={(event) => apply(currentUserChanged(event.target.value))}>
           {OWNERS.map((name) => <option key={name}>{name}</option>)}

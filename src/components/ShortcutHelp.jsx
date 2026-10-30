@@ -6,12 +6,12 @@ const SHORTCUTS = [
   ['/', 'Search'],
   ['Ctrl+Z', 'Undo last move'],
   ['r', 'Retry failed save'],
-  ['u', 'Apply pending updates'],
+  ['u', 'Refresh the list when deals have changed'],
   ['Esc', 'Close, or clear selection'],
   ['Tab', 'Reach every other control'],
 ];
 
-export default function ShortcutHelp() {
+export default function ShortcutHelp({ onClose }) {
   return (
     <div className="overlay" role="dialog" aria-label="Keyboard shortcuts">
       <dl>
@@ -19,6 +19,7 @@ export default function ShortcutHelp() {
           <div key={key}><dt><kbd>{key}</kbd></dt><dd>{action}</dd></div>
         ))}
       </dl>
+      <button onClick={onClose}>Close (Esc)</button>
     </div>
   );
 }

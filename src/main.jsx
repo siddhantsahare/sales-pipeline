@@ -5,7 +5,7 @@ import { generateDeals } from './server/generateDeals.js';
 import { createFakeServer } from './server/fakeServer.js';
 import { createAppStore } from './store/index.js';
 import { dealsLoaded, dealsUpdated } from './store/dealsSlice.js';
-import { rowsRefreshed, updatesCounted } from './store/uiSlice.js';
+import { listChangesNoted, rowsRefreshed } from './store/uiSlice.js';
 import { EngineContext } from './sync/EngineContext.js';
 import { createSyncEngine } from './sync/syncEngine.js';
 import './styles.css';
@@ -19,7 +19,7 @@ async function start() {
   store.dispatch(rowsRefreshed());
   server.subscribe((deals) => {
     store.dispatch(dealsUpdated(deals));
-    store.dispatch(updatesCounted(deals.length));
+    store.dispatch(listChangesNoted(deals));
   });
   server.startTeammates();
 
