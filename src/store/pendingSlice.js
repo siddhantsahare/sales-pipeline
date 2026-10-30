@@ -4,8 +4,8 @@ function newEntry(toStage, baseVersion = null) {
   return { toStage, status: 'queued', waiting: null, teammateDeal: null, baseVersion };
 }
 
-// Keyed by deal ID. baseVersion is the version a move was sent against, kept so
-// a manual retry conflicts properly if the deal has changed since.
+// Keyed by deal ID. baseVersion is the version the user was looking at when they
+// acted, so a save conflicts properly if the deal changes before it is sent or retried.
 const pendingSlice = createSlice({
   name: 'pending',
   initialState: {},
@@ -25,22 +25,23 @@ const pendingSlice = createSlice({
       state[action.payload.dealId].waiting = action.payload.toStage;
     },
     movesSaved(state, action) {
-      for (const dealId of action.payload) {
+      for (const { dealId, version } of action.payload) {
         const { waiting } = state[dealId];
-        if (waiting) state[dealId] = newEntry(waiting);
+        if (waiting) state[dealId] = newEntry(waiting, version);
         else delete state[dealId];
       }
     },
     movesFailed(state, action) {
       for (const dealId of action.payload) {
-        const { waiting } = state[dealId];
-        if (waiting) state[dealId] = newEntry(waiting);
+        const { waiting, baseVersion } = state[dealId];
+        if (waiting) state[dealId] = newEntry(waiting, baseVersion);
         else state[dealId].status = 'failed';
       }
     },
     moveConflicted(state, action) {
       const { dealId, deal } = action.payload;
       state[dealId].status = 'conflict';
+      state[dealId].toStage = state[dealId].waiting ?? state[dealId].toStage;
       state[dealId].waiting = null;
       state[dealId].teammateDeal = deal;
     },

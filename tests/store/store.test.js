@@ -34,7 +34,7 @@ test('a saved move with a waiting move queues the waiting one', () => {
   store.dispatch(movesQueued([{ dealId: 'd1', toStage: 'won' }]));
   store.dispatch(movesSent([{ dealId: 'd1', expectedVersion: 1 }]));
   store.dispatch(moveWaiting({ dealId: 'd1', toStage: 'lost' }));
-  store.dispatch(movesSaved(['d1']));
+  store.dispatch(movesSaved([{ dealId: 'd1', version: 2 }]));
   expect(store.getState().pending.d1).toMatchObject({ toStage: 'lost', status: 'queued', waiting: null });
 });
 

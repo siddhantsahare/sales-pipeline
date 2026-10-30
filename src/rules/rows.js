@@ -4,7 +4,8 @@ import { REASONS, getReasons, isOld } from './priority.js';
 /** Whether a displayed deal belongs in the current view and filters. */
 export function matchesFilters(deal, ui, pending, today) {
   const { search, owner, stage, oldOnly, failedOnly } = ui.filters;
-  if (ui.view === 'today') {
+  // Failed moves must always be findable, even if the deal no longer belongs in today's list.
+  if (ui.view === 'today' && !failedOnly) {
     if (deal.owner !== ui.currentUser || getReasons(deal, today).length === 0) return false;
   }
   if (search && !deal.company.toLowerCase().includes(search.toLowerCase())) return false;

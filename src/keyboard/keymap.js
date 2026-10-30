@@ -15,13 +15,14 @@ const TABLE_KEYS = {
 const CTRL_KEYS = { a: 'selectAll', z: 'undo' };
 
 /** Turns a key press into an action name, or null to leave it to the browser. */
-export function resolveKey({ key, ctrlKey }, { inInput, pickerOpen, confirmOpen }) {
+export function resolveKey({ key, ctrlKey, metaKey, altKey }, { inInput, pickerOpen, confirmOpen }) {
+  if (altKey) return null;
   if (inInput || confirmOpen) return key === 'Escape' ? 'close' : null;
   if (pickerOpen) {
     if (/^[1-7]$/.test(key)) return `stage:${key}`;
     if (key === 'ArrowRight') return 'nextStage';
     return key === 'Escape' ? 'close' : null;
   }
-  if (ctrlKey) return CTRL_KEYS[key] ?? null;
+  if (ctrlKey || metaKey) return CTRL_KEYS[key] ?? null;
   return TABLE_KEYS[key] ?? null;
 }

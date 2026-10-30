@@ -27,6 +27,12 @@ test('a confirmation dialog blocks every shortcut except Escape', () => {
   expect(resolveKey({ key: 'Escape' }, confirming)).toBe('close');
 });
 
+test('Cmd works like Ctrl, and Cmd or Alt browser shortcuts are left alone', () => {
+  expect(resolveKey({ key: 'z', metaKey: true }, table)).toBe('undo');
+  expect(resolveKey({ key: 'r', metaKey: true }, table)).toBeNull();
+  expect(resolveKey({ key: 'r', altKey: true }, table)).toBeNull();
+});
+
 test('browser shortcuts like Ctrl+R are left alone', () => {
   expect(resolveKey({ key: 'r', ctrlKey: true }, table)).toBeNull();
 });

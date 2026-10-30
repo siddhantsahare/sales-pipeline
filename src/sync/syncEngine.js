@@ -60,7 +60,7 @@ export function createSyncEngine({ api, store }) {
 
     store.dispatch(dealsUpdated(results.map((result) => result.deal)));
     saved.forEach((result) => lastSavedVersion.set(result.dealId, result.deal.version));
-    store.dispatch(movesSaved(savedIds));
+    store.dispatch(movesSaved(saved.map(({ dealId, deal }) => ({ dealId, version: deal.version }))));
     store.dispatch(updatesCounted(savedIds.length));
     for (const { dealId, deal } of conflicts) {
       forgetUndo(dealId, state().pending[dealId].toStage);
@@ -122,13 +122,13 @@ export function createSyncEngine({ api, store }) {
     const fromStage = selectDisplayDeal(state(), dealId).stage;
     if (fromStage === toStage) return;
     undoStack.push({ dealId, fromStage, toStage });
-    enqueueSingle(dealId, toStage);
+    enqueueSingle(dealId, toStage, confirmed(dealId).version);
   }
 
   function startBulk(dealIds, total, skipped, moveFor) {
     store.dispatch(bulkStarted({ total, skipped }));
     if (dealIds.length === 0) {
-      store.dispatch(bulkFinished());
+      if (bulkIds.size === 0) store.dispatch(bulkFinished());
       return;
     }
     // One dispatch for the whole list: one per deal would freeze the UI at this size.
@@ -149,7 +149,11 @@ export function createSyncEngine({ api, store }) {
 
   function moveMany(dealIds, toStage) {
     const toMove = dealIds.filter((id) => selectDisplayDeal(state(), id).stage !== toStage);
-    startBulk(toMove, dealIds.length, dealIds.length - toMove.length, () => ({ toStage }));
+    // The version is captured now: a big move can take a while to reach some deals,
+    // and a teammate's change in that gap must still be a conflict.
+    startBulk(toMove, dealIds.length, dealIds.length - toMove.length, (dealId) => ({
+      toStage, baseVersion: confirmed(dealId).version,
+    }));
   }
 
   function retry(dealId) {
@@ -177,13 +181,12 @@ export function createSyncEngine({ api, store }) {
     const entry = undoStack.at(-1);
     if (!entry) return 'empty';
     const { dealId, fromStage } = entry;
-    const isPending = Boolean(state().pending[dealId]);
-    if (!isPending && confirmed(dealId).version !== lastSavedVersion.get(dealId)) {
-      undoStack.pop();
-      return 'blocked';
-    }
+    const status = state().pending[dealId]?.status;
+    const isPending = status === 'queued' || status === 'saving';
+    const { version } = confirmed(dealId);
     undoStack.pop();
-    enqueueSingle(dealId, fromStage);
+    if (!isPending && version !== lastSavedVersion.get(dealId)) return 'blocked';
+    enqueueSingle(dealId, fromStage, version);
     return 'ok';
   }
 

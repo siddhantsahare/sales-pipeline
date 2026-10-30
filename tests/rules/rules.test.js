@@ -60,6 +60,12 @@ test('failedOnly matches failed and conflicted moves', () => {
   expect(matchesFilters(deal(), ui, undefined, today)).toBe(false);
 });
 
+test('failedOnly in the today view includes closed and other owners\' deals', () => {
+  const ui = { ...allView({ failedOnly: true }), view: 'today' };
+  const closed = deal({ stage: 'won', owner: 'Rahul' });
+  expect(matchesFilters(closed, ui, { status: 'conflict' }, today)).toBe(true);
+});
+
 test('search matches company, ignoring case', () => {
   expect(matchesFilters(deal(), allView({ search: 'acme' }), undefined, today)).toBe(true);
   expect(matchesFilters(deal(), allView({ search: 'hooli' }), undefined, today)).toBe(false);

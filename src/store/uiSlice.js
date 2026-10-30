@@ -40,7 +40,12 @@ const uiSlice = createSlice({
     updatesCounted(state, action) { state.updateCount += action.payload; },
     bulkStarted(state, action) {
       const { total, skipped = 0 } = action.payload;
-      state.bulk = { total, skipped, moved: 0, failed: 0, conflicts: 0, active: true };
+      if (state.bulk?.active) {
+        state.bulk.total += total;
+        state.bulk.skipped += skipped;
+      } else {
+        state.bulk = { total, skipped, moved: 0, failed: 0, conflicts: 0, active: true };
+      }
     },
     bulkProgress(state, action) {
       const { moved = 0, failed = 0, conflicts = 0 } = action.payload;

@@ -62,9 +62,9 @@ UI (components/)  ->  store (store/)  <->  sync engine (sync/)  ->  fake server 
 ## One save, from keypress to server and back
 
 1. `m` then `6` reaches `moveToStage` in `App.jsx`, which calls `engine.move(dealId, 'won')`.
-2. `move` records the undo entry and queues the move. `movesQueued` adds it to the `pending` slice.
+2. `move` records the undo entry and queues the move with the version the user was looking at. `movesQueued` adds it to the `pending` slice.
 3. `selectDisplayDeal` now returns the deal with the pending stage, so the row shows Won and "Saving…" at once. Only that row re-renders.
-4. `pump` sees a free request slot, so `sendBatch` calls `api.moveDeals` with the deal's current version.
+4. `pump` sees a free request slot, so `sendBatch` calls `api.moveDeals` with that version.
 5. The fake server waits, then does one of three things:
    - **Rejects the request:** `handleFailure` marks the move failed. The row shows server state with a red marker, and `r` retries.
    - **Returns `conflict`:** the version was old. `handleResults` stores the teammate's deal, and the row offers Keep theirs or Apply mine.

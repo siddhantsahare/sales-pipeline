@@ -20,9 +20,9 @@ The screen shows confirmed server data plus a separate list of unsaved moves. Op
 
 Each deal has one move in flight and one waiting, and a newer move replaces the waiting one. Saves for a deal therefore can't land out of order, and rapid presses send only what's needed.
 
-Every save carries the version it was based on. If a teammate got there first, the server returns a conflict and nothing is overwritten. The row names the teammate and offers **Keep theirs** or **Apply mine**, and Apply mine is a deliberate new move on the latest version. Undo is a real reverse move with the same check, and it stops if the deal has changed since. Responses and teammate events can arrive out of order, so the store ignores anything older than the version it holds.
+Every save carries the version the user was looking at when they acted, even if a big bulk move takes a while to reach that deal. If a teammate got there first, the server returns a conflict and nothing is overwritten. The row names the teammate and offers **Keep theirs** or **Apply mine**, and Apply mine is a deliberate new move on the latest version. Undo is a real reverse move with the same check, and it stops if the deal has changed since. Responses and teammate events can arrive out of order, so the store ignores anything older than the version it holds.
 
-Bulk moves go in batches of 200, up to 3 at once, and a single move always goes ahead of them. A failed batch affects only its own deals, and the summary reports moved, failed, conflicted and skipped counts, with **Retry failed**.
+Bulk moves go in batches of 200, up to 3 at once, and a single move goes ahead of queued batches, unless that deal is itself waiting in one. A failed batch affects only its own deals, and the summary reports moved, failed, conflicted and skipped counts, with **Retry failed**.
 
 ## Performance
 
