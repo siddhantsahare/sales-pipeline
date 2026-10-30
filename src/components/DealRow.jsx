@@ -1,4 +1,4 @@
-import { memo, useRef } from 'react';
+import { memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { STAGES, STAGE_LABELS } from '../constants.js';
 import { getReasons } from '../rules/priority.js';
@@ -32,7 +32,6 @@ function DealRow({ dealId, index, start }) {
   const focused = useSelector((state) => state.ui.focusedId === dealId);
   const selected = useSelector((state) => Boolean(state.ui.selectedIds[dealId]));
   const stale = useSelector((state) => !matchesFilters(deal, state.ui, pending, TODAY));
-  const firstVersion = useRef(deal.version);
   const dispatch = useDispatch();
   const { engine } = useEngine();
 
@@ -57,7 +56,6 @@ function DealRow({ dealId, index, start }) {
       style={{ transform: `translateY(${start}px)` }}
       onClick={() => dispatch(focusChanged(dealId))}
     >
-      {deal.version !== firstVersion.current && <i key={deal.version} className="flash" />}
       <span role="gridcell">
         <input
           type="checkbox"

@@ -47,8 +47,6 @@ button, select, input { font: inherit; }
 .status button { padding: 0 4px; }
 .table { position: relative; }
 .row.stale { opacity: 0.45; }
-.flash { position: absolute; inset: 0; pointer-events: none; background: rgba(255, 205, 80, 0.3); animation: fade 1.2s forwards; }
-@keyframes fade { to { opacity: 0; } }
 .conflict button { padding: 0 4px; }
 .row.problem .status { overflow: visible; }
 .updates-pill { margin-left: 12px; padding: 0 8px; border: 1px solid #c9d6f7; border-radius: 3px; background: #eef3ff; cursor: pointer; }
