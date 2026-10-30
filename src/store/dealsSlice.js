@@ -12,25 +12,28 @@ function addToTotals(totals, deal, sign) {
 
 const dealsSlice = createSlice({
   name: 'deals',
-  initialState: { byId: {}, stageTotals: emptyTotals() },
+  // A list, not an object keyed by ID: Redux copies whatever it changes, and copying an
+  // array of 50,000 is far cheaper than copying an object with 50,000 keys.
+  initialState: { list: [], indexById: {}, stageTotals: emptyTotals() },
   reducers: {
     dealsLoaded(state, action) {
-      const byId = {};
+      const indexById = {};
       const stageTotals = emptyTotals();
-      for (const deal of action.payload) {
-        byId[deal.id] = deal;
+      action.payload.forEach((deal, index) => {
+        indexById[deal.id] = index;
         addToTotals(stageTotals, deal, 1);
-      }
-      return { byId, stageTotals };
+      });
+      return { list: action.payload, indexById, stageTotals };
     },
     // Responses and teammate events can arrive out of order, so only newer versions count.
     dealsUpdated(state, action) {
       for (const deal of action.payload) {
-        const held = state.byId[deal.id];
-        if (held && held.version >= deal.version) continue;
-        if (held) addToTotals(state.stageTotals, held, -1);
+        const index = state.indexById[deal.id];
+        const held = state.list[index];
+        if (held.version >= deal.version) continue;
+        addToTotals(state.stageTotals, held, -1);
         addToTotals(state.stageTotals, deal, 1);
-        state.byId[deal.id] = deal;
+        state.list[index] = deal;
       }
     },
   },

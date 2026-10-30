@@ -276,6 +276,17 @@ test('an all-skipped bulk during a running one does not finish it', async () => 
   expect(store.getState().ui.bulk).toMatchObject({ active: false, moved: 1, skipped: 1 });
 });
 
+test('a conflict where the server already has our stage counts as saved', async () => {
+  api.moveDeals.mockImplementationOnce(async ([move]) => [{
+    dealId: move.dealId, status: 'conflict', deal: deal(move.dealId, { stage: 'won', version: 5 }),
+  }]);
+  engine.move('d1', 'won');
+  await flush();
+  expect(pending('d1')).toBeUndefined();
+  expect(display('d1')).toMatchObject({ stage: 'won', version: 5 });
+  expect(engine.undo()).toBe('ok');
+});
+
 test('retryFailed resends every failed move', async () => {
   const ids = ['d1', 'd2'];
   setup(ids.map((id) => deal(id)));

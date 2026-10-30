@@ -11,7 +11,7 @@ const deal = (extra = {}) => ({
   id: 'd1', company: 'Acme Corp', value: 100, stage: 'new', owner: 'Priya',
   nextFollowUp: '2026-11-20', expectedClose: '2026-12-30', lastActivity: '2026-10-29', ...extra,
 });
-const byId = (...deals) => Object.fromEntries(deals.map((d) => [d.id, d]));
+const list = (...deals) => deals;
 
 test('overdue follow-up comes first', () => {
   const reasons = getReasons(deal({ nextFollowUp: '2026-10-20', lastActivity: '2026-10-01' }), today);
@@ -34,7 +34,7 @@ test('won and lost deals have no reasons', () => {
 });
 
 test('today view shows only my open deals with reasons, by urgency then value', () => {
-  const deals = byId(
+  const deals = list(
     deal({ id: 'idle', lastActivity: '2026-10-01', value: 900 }),
     deal({ id: 'small', nextFollowUp: '2026-10-01', value: 10 }),
     deal({ id: 'big', nextFollowUp: '2026-10-01', value: 500 }),
@@ -72,13 +72,13 @@ test('search matches company, ignoring case', () => {
 });
 
 test('stage filter uses the pending stage', () => {
-  const deals = byId(deal({ id: 'a' }), deal({ id: 'b' }));
+  const deals = list(deal({ id: 'a' }), deal({ id: 'b' }));
   const pending = { b: { toStage: 'won', status: 'saving', waiting: null } };
   expect(buildRowIds(deals, allView({ stage: 'won' }), pending, today)).toEqual(['b']);
 });
 
 test('sorts by a chosen column in either direction', () => {
-  const deals = byId(deal({ id: 'a', company: 'B' }), deal({ id: 'b', company: 'A' }));
+  const deals = list(deal({ id: 'a', company: 'B' }), deal({ id: 'b', company: 'A' }));
   expect(buildRowIds(deals, allView({}, { key: 'company', dir: 'asc' }), {}, today)).toEqual(['b', 'a']);
   expect(buildRowIds(deals, allView({}, { key: 'company', dir: 'desc' }), {}, today)).toEqual(['a', 'b']);
 });

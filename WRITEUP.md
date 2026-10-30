@@ -25,31 +25,58 @@ Every save carries the version the user was looking at when they acted, even if 
 
 Bulk moves go in batches of 200, up to 3 at once, and a single move goes ahead of queued batches, unless that deal is itself waiting in one. A failed batch affects only its own deals, and the summary reports moved, failed, conflicted and skipped counts, with **Retry failed**.
 
+## When things go wrong
+
+| What happens | What the user sees |
+|---|---|
+| A save fails | The row returns to its real stage with a red marker and a Retry button. It stays until dealt with, and the top bar counts it |
+| Several quick moves to one deal | Each keypress shows at once. One save runs at a time, and only the latest waiting move is sent |
+| A teammate changed the deal first | Nothing is overwritten. The row names the teammate and offers Keep theirs or Apply mine |
+| A teammate moved it to the stage I wanted | Counted as saved, because the deal is where the user asked |
+| A teammate edits a deal during a slow bulk move | That deal becomes a conflict, because each move keeps the version from when the user acted |
+| A bulk batch fails | Other batches carry on. The summary counts moved, failed, conflicted and skipped deals, and Retry failed resends only the failures |
+| Every save fails | The bulk move still finishes with a summary and never hangs |
+| Undo after a teammate's change | Undo stops and says so |
+| A deal stops matching my filter | It stays in place, greyed out, until the user refreshes the list |
+| A failed deal is outside the current view | The "need attention" count opens every failed and conflicted deal, in either view |
+
 ## Performance
 
-Only the rows on screen exist in the DOM, about 24 at a time, and each selects its own deal, so one change re-renders one row. Measured in the dev build on my laptop with 50,000 deals:
+Only the rows on screen exist in the DOM, about 20 to 40 at a time, and each selects its own deal, so one change re-renders one row. Measured on the production build in Chromium on my machine, with 50,000 deals. These times cover the JavaScript work and exclude painting:
 
 | Action | Time |
 |---|---|
-| Move focus to the next row | About 1ms |
-| Switch view | About 90ms |
-| Sort or refresh row order | About 120ms |
-| Start a 20,000-deal bulk move | About 300ms |
-| Store work per bulk batch of 200 | About 110ms |
+| Move focus to the next row | About 4ms |
+| Switch view | About 35ms |
+| Sort | About 42ms |
+| Select all 50,000 deals | About 110ms |
+| Start a 20,060-deal bulk move | About 170ms |
 
-Search waits 150ms after typing, so the input never lags. The weak spot is bulk moves: each batch copies the 50,000-key deals object, so a large move causes a hitch of about 100ms per batch. The app stays usable, but it isn't perfectly smooth. I kept the simpler code, and splitting deals into buckets is the first thing I would change.
+Search waits 150ms after typing, so the input never lags.
+
+Bulk moves were the weak spot. Redux copies whatever it changes, so each batch was copying a 50,000-key object. Storing deals in an array with an ID lookup made that update about 7 times faster in isolation (51ms to 8ms), and total store work per batch fell from 124ms to 48ms in a stress test. In a real 20,060-deal move at default delays, taking 34 seconds while moving through rows, batches still cost about 68ms each. The worst was 148ms, and two tasks passed 100ms. The app stays usable, but it isn't perfectly smooth. What's left is mostly the pending-moves object, which is at its largest during a huge move. I tried turning off Immer's freezing and kept the simpler code, because it only saved about 10ms.
+
+## How I verified this
+
+- **Automated tests:** 76 Vitest tests cover the save logic, store, priority rules and key mapping, including rapid moves, partial failure, overlapping bulk moves and blocked undo.
+- **Real scenarios:** in the running app I checked failed save and retry, conflict and both choices, a 20,060-deal move at 30% failure, and Retry failed.
+- **Overwrite check:** with teammates at maximum, 13 of 5,998 deals changed during a slow bulk move. All 13 became conflicts, and the first one I opened still showed the teammate's stage.
+- **Independent review:** a fresh AI review of the whole codebase found one critical bug, the silent overwrite above, and six important issues. Each has a fix, and six of the seven have tests that failed first.
+- **Fresh clone:** a clean clone installs, passes the tests and builds.
+
+**What I did not verify:** I ran most scenarios by script, not by hand, and not with a screen reader or an automated accessibility scan. There are no component or browser tests.
 
 ## Known limits
 
 - Any teammate change causes a conflict, even a value edit that doesn't affect the stage. It is safe but sometimes over-cautious. A separate stage version would fix it.
-- There are no automatic retries or duplicate detection. If a real save succeeded but its response was lost, a retry would report a conflict with the user's own save.
+- There are no automatic retries, so about 1 save in 10 needs a manual retry. If a real save succeeded but its reply was lost, the retry would see the deal already on that stage and count it as saved. The fake server doesn't simulate lost replies, so only a unit test covers this.
 - A page reload resets everything, because the fake server lives in memory.
 - Tests cover the save logic, store, rules and key mapping. There are no component or browser tests, so the UI is checked with a manual checklist in the README.
 
 ## What I would do with more time
 
-- Split the deals store into buckets, to remove the bulk hitch
-- Add a separate stage version, automatic retries and operation IDs for duplicate detection
+- Shrink the pending-moves cost, to smooth out very large bulk moves
+- Add a separate stage version and automatic retries
 - Add bulk undo and bulk cancel
 - Add a dedicated stale deals view and a needs-attention view
 - Add Shift range selection, a tab-close warning and browser tests for the keyboard flows

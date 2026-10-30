@@ -30,11 +30,12 @@ function compareByColumn(a, b, { key, dir }) {
 }
 
 /** The ordered deal IDs for the table. Only runs when the user asks for a new order. */
-export function buildRowIds(dealsById, ui, pendingById, today) {
+export function buildRowIds(deals, ui, pendingById, today) {
   const rows = [];
-  for (const id in dealsById) {
-    const deal = applyPending(dealsById[id], pendingById[id]);
-    if (matchesFilters(deal, ui, pendingById[id], today)) rows.push(deal);
+  for (const confirmed of deals) {
+    const pending = pendingById[confirmed.id];
+    const deal = applyPending(confirmed, pending);
+    if (matchesFilters(deal, ui, pending, today)) rows.push(deal);
   }
   const compare = ui.view === 'today'
     ? urgencyComparator(rows, today)

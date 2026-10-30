@@ -77,7 +77,7 @@ export default uiSlice.reducer;
 export function rowsRefreshed() {
   return (dispatch, getState) => {
     const { deals, pending, ui } = getState();
-    const rowIds = buildRowIds(deals.byId, ui, pending, new Date());
+    const rowIds = buildRowIds(deals.list, ui, pending, new Date());
     dispatch(rowsSet({ rowIds, focusedId: refocus(ui.rowIds, rowIds, ui.focusedId) }));
   };
 }

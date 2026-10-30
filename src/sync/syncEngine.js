@@ -3,7 +3,7 @@ import { dealsUpdated } from '../store/dealsSlice.js';
 import {
   moveCleared, moveConflicted, moveWaiting, movesFailed, movesQueued, movesSaved, movesSent,
 } from '../store/pendingSlice.js';
-import { selectDisplayDeal } from '../store/selectors.js';
+import { selectDeal, selectDisplayDeal } from '../store/selectors.js';
 import { announced, bulkFinished, bulkProgress, bulkStarted, listChangesNoted } from '../store/uiSlice.js';
 
 /**
@@ -20,7 +20,7 @@ export function createSyncEngine({ api, store }) {
   let requestsInFlight = 0;
 
   const state = () => store.getState();
-  const confirmed = (dealId) => state().deals.byId[dealId];
+  const confirmed = (dealId) => selectDeal(state(), dealId);
   const companyOf = (dealId) => confirmed(dealId).company ?? 'deal';
 
   function takeBatch() {
@@ -54,8 +54,11 @@ export function createSyncEngine({ api, store }) {
   }
 
   function handleResults(results) {
-    const saved = results.filter((result) => result.status === 'ok');
-    const conflicts = results.filter((result) => result.status === 'conflict');
+    // A version mismatch with the stage we wanted isn't a real conflict: the deal is where
+    // the user asked, whether a teammate moved it or our earlier save's reply was lost.
+    const isSaved = ({ status, dealId, deal }) => status === 'ok' || deal.stage === state().pending[dealId].toStage;
+    const saved = results.filter(isSaved);
+    const conflicts = results.filter((result) => !isSaved(result));
     const savedIds = saved.map((result) => result.dealId);
 
     store.dispatch(dealsUpdated(results.map((result) => result.deal)));
