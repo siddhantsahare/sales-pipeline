@@ -20,7 +20,7 @@ function isTypingTarget(element) {
 }
 
 /** The single keydown listener for the whole screen. */
-export function useKeyboard({ pickerOpen, setPickerOpen, setHelpOpen, moveToStage }) {
+export function useKeyboard({ pickerOpen, confirmStage, setConfirmStage, setPickerOpen, setHelpOpen, moveToStage }) {
   const dispatch = useDispatch();
   const store = useStore();
   const { engine } = useEngine();
@@ -32,8 +32,13 @@ export function useKeyboard({ pickerOpen, setPickerOpen, setHelpOpen, moveToStag
       if (next) dispatch(focusChanged(next));
     }
 
-    function closeEverything() {
-      setPickerOpen(false);
+    // Esc closes one layer at a time, so cancelling a dialog keeps the selection.
+    function closeTopLayer() {
+      if (pickerOpen || confirmStage) {
+        setPickerOpen(false);
+        setConfirmStage(null);
+        return;
+      }
       setHelpOpen(false);
       document.activeElement?.blur();
       dispatch(selectionCleared());
@@ -57,14 +62,14 @@ export function useKeyboard({ pickerOpen, setPickerOpen, setHelpOpen, moveToStag
       if (action === 'retry' && state.pending[focusedId]?.status === 'failed') engine.retry(focusedId);
       if (action === 'refresh') dispatch(rowsRefreshed());
       if (action === 'help') setHelpOpen((open) => !open);
-      if (action === 'close') closeEverything();
+      if (action === 'close') closeTopLayer();
       if (action === 'nextStage') nextStage();
       if (action.startsWith('stage:')) moveToStage(STAGES[Number(action.slice(6)) - 1]);
     }
 
     function onKeyDown(event) {
       const inInput = isTypingTarget(event.target);
-      const action = resolveKey(event, { inInput, pickerOpen });
+      const action = resolveKey(event, { inInput, pickerOpen, confirmOpen: Boolean(confirmStage) });
       if (!action) return;
       event.preventDefault();
       run(action);
@@ -72,5 +77,5 @@ export function useKeyboard({ pickerOpen, setPickerOpen, setHelpOpen, moveToStag
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [dispatch, store, engine, pickerOpen, setPickerOpen, setHelpOpen, moveToStage]);
+  }, [dispatch, store, engine, pickerOpen, confirmStage, setConfirmStage, setPickerOpen, setHelpOpen, moveToStage]);
 }

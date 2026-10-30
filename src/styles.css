@@ -41,6 +41,7 @@ button, select, input { font: inherit; }
 .number { text-align: right; }
 .status { color: #5b6475; }
 
+.bulk-bar { flex: none; display: flex; gap: 20px; align-items: center; padding: 6px 12px; border-top: 1px solid #c9d6f7; background: #eef3ff; }
 .status-line { flex: none; padding: 5px 12px; border-top: 1px solid #dde1e8; background: #f6f7f9; color: #3c4453; }
 
 .overlay { position: fixed; top: 22%; left: 50%; transform: translateX(-50%); z-index: 10; min-width: 280px; padding: 12px 16px; background: #fff; border: 1px solid #c4cad6; border-radius: 6px; box-shadow: 0 8px 28px rgba(20, 28, 45, 0.2); }

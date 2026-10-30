@@ -15,8 +15,8 @@ const TABLE_KEYS = {
 const CTRL_KEYS = { a: 'selectAll', z: 'undo' };
 
 /** Turns a key press into an action name, or null to leave it to the browser. */
-export function resolveKey({ key, ctrlKey }, { inInput, pickerOpen }) {
-  if (inInput) return key === 'Escape' ? 'close' : null;
+export function resolveKey({ key, ctrlKey }, { inInput, pickerOpen, confirmOpen }) {
+  if (inInput || confirmOpen) return key === 'Escape' ? 'close' : null;
   if (pickerOpen) {
     if (/^[1-7]$/.test(key)) return `stage:${key}`;
     if (key === 'ArrowRight') return 'nextStage';

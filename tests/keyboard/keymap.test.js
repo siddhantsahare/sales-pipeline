@@ -21,6 +21,12 @@ test('Ctrl+A and Ctrl+Z work in the table', () => {
   expect(resolveKey({ key: 'z', ctrlKey: true }, table)).toBe('undo');
 });
 
+test('a confirmation dialog blocks every shortcut except Escape', () => {
+  const confirming = { inInput: false, pickerOpen: false, confirmOpen: true };
+  expect(resolveKey({ key: 'j' }, confirming)).toBeNull();
+  expect(resolveKey({ key: 'Escape' }, confirming)).toBe('close');
+});
+
 test('browser shortcuts like Ctrl+R are left alone', () => {
   expect(resolveKey({ key: 'r', ctrlKey: true }, table)).toBeNull();
 });
