@@ -5,6 +5,7 @@ import { ROW_HEIGHT } from '../constants.js';
 import { rowsRefreshed, sortChanged } from '../store/uiSlice.js';
 import { useEngine } from '../sync/EngineContext.js';
 import DealRow from './DealRow.jsx';
+import UpdatesPill from './UpdatesPill.jsx';
 
 const COLUMNS = [
   ['reason', 'Why today', false],
@@ -66,6 +67,7 @@ export default function DealTable() {
         ))}
       </div>
       {rowIds.length === 0 && <p className="empty">No deals match this view.</p>}
+      <UpdatesPill />
       <div className="scroller" ref={scrollerRef}>
         <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
           {items.map((item) => (

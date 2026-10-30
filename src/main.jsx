@@ -5,7 +5,7 @@ import { generateDeals } from './server/generateDeals.js';
 import { createFakeServer } from './server/fakeServer.js';
 import { createAppStore } from './store/index.js';
 import { dealsLoaded, dealsUpdated } from './store/dealsSlice.js';
-import { rowsRefreshed } from './store/uiSlice.js';
+import { rowsRefreshed, updatesCounted } from './store/uiSlice.js';
 import { EngineContext } from './sync/EngineContext.js';
 import { createSyncEngine } from './sync/syncEngine.js';
 import './styles.css';
@@ -17,7 +17,10 @@ const engine = createSyncEngine({ api: server, store });
 async function start() {
   store.dispatch(dealsLoaded(await server.getDeals()));
   store.dispatch(rowsRefreshed());
-  server.subscribe((deals) => store.dispatch(dealsUpdated(deals)));
+  server.subscribe((deals) => {
+    store.dispatch(dealsUpdated(deals));
+    store.dispatch(updatesCounted(deals.length));
+  });
   server.startTeammates();
 
   createRoot(document.getElementById('root')).render(

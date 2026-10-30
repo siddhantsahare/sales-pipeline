@@ -41,6 +41,21 @@ button, select, input { font: inherit; }
 .number { text-align: right; }
 .status { color: #5b6475; }
 
+.table { position: relative; }
+.row.stale { opacity: 0.45; }
+.flash { position: absolute; inset: 0; pointer-events: none; background: #ffe9a8; animation: fade 1.2s forwards; }
+@keyframes fade { to { opacity: 0; } }
+.conflict button { padding: 0 4px; }
+.row.problem .status { overflow: visible; }
+.updates-pill { position: absolute; top: 42px; left: 50%; transform: translateX(-50%); z-index: 5; padding: 3px 12px; border: 1px solid #c9d6f7; border-radius: 12px; background: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(20, 28, 45, 0.15); }
+.failed-count { border: 1px solid #c9302c; border-radius: 3px; background: #fdecea; color: #c9302c; }
+
+.sim-panel { flex: none; padding: 5px 12px; border-top: 1px solid #dde1e8; }
+.sim-panel summary { cursor: pointer; font-weight: 600; }
+.sim-panel > div { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; padding-top: 6px; }
+.sim-panel label { display: flex; flex-direction: column; gap: 2px; }
+.sim-panel label:has(input[type='checkbox']) { flex-direction: row; align-items: center; }
+
 .bulk-bar { flex: none; display: flex; gap: 20px; align-items: center; padding: 6px 12px; border-top: 1px solid #c9d6f7; background: #eef3ff; }
 .status-line { flex: none; padding: 5px 12px; border-top: 1px solid #dde1e8; background: #f6f7f9; color: #3c4453; }
 

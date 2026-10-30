@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { OWNERS } from '../constants.js';
+import { selectFailedCount } from '../store/selectors.js';
 import {
   currentUserChanged, filtersChanged, rowsRefreshed, viewChanged,
 } from '../store/uiSlice.js';
@@ -11,6 +12,7 @@ export default function TopBar() {
   const view = useSelector((state) => state.ui.view);
   const filters = useSelector((state) => state.ui.filters);
   const currentUser = useSelector((state) => state.ui.currentUser);
+  const failedCount = useSelector(selectFailedCount);
 
   function apply(action) {
     dispatch(action);
@@ -54,6 +56,11 @@ export default function TopBar() {
         />
         Failed
       </label>
+      {failedCount > 0 && (
+        <button className="failed-count" onClick={() => apply(filtersChanged({ failedOnly: true }))}>
+          {failedCount.toLocaleString('en-IN')} need attention
+        </button>
+      )}
       <label className="push-right">
         Viewing as{' '}
         <select value={currentUser} onChange={(event) => apply(currentUserChanged(event.target.value))}>
