@@ -35,57 +35,82 @@ export default function TopBar({ onShowShortcuts }) {
   }, [dispatch, search]);
 
   return (
-    <header className="top-bar">
-      {VIEWS.map(([id, label]) => (
-        <button key={id} aria-pressed={view === id} onClick={() => apply(viewChanged(id))}>{label}</button>
-      ))}
-      <input
-        id="search"
-        type="search"
-        placeholder="Search company ( / )"
-        aria-label="Search company"
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-      />
-      <select
-        aria-label="Owner"
-        value={filters.owner}
-        onChange={(event) => apply(filtersChanged({ owner: event.target.value }))}
-      >
-        <option value="">All owners</option>
-        {OWNERS.map((name) => <option key={name}>{name}</option>)}
-      </select>
-      <label>
+    <header className="flex flex-none flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="text-lg font-semibold text-slate-900">Sales pipeline</h1>
+        <div className="flex rounded-lg bg-slate-200 p-0.5">
+          {VIEWS.map(([id, label]) => (
+            <button
+              key={id}
+              aria-pressed={view === id}
+              onClick={() => apply(viewChanged(id))}
+              className="rounded-md px-3 py-1 font-medium text-slate-600 aria-pressed:bg-white aria-pressed:text-slate-900 aria-pressed:shadow-xs"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          <button className="btn" onClick={() => dispatch(announced(UNDO_MESSAGES[engine.undo()]))}>Undo</button>
+          <button className="btn" onClick={onShowShortcuts}>Shortcuts</button>
+          <label className="flex items-center gap-1.5 text-slate-500">
+            Viewing as
+            <select
+              className="field text-slate-800"
+              value={currentUser}
+              onChange={(event) => apply(currentUserChanged(event.target.value))}
+            >
+              {OWNERS.map((name) => <option key={name}>{name}</option>)}
+            </select>
+          </label>
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
         <input
-          type="checkbox"
-          checked={filters.oldOnly}
-          onChange={(event) => apply(filtersChanged({ oldOnly: event.target.checked }))}
+          id="search"
+          type="search"
+          className="field w-56"
+          placeholder="Search company ( / )"
+          aria-label="Search company"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
         />
-        Not touched in 90+ days
-      </label>
-      <label>
-        <input
-          type="checkbox"
-          checked={filters.failedOnly}
-          onChange={(event) => apply(filtersChanged({ failedOnly: event.target.checked }))}
-        />
-        Failed
-      </label>
-      {failedCount > 0 && (
-        <button className="failed-count" onClick={() => apply(filtersChanged({ failedOnly: true }))}>
-          {failedCount.toLocaleString('en-IN')} need attention
-        </button>
-      )}
-      <button className="push-right" onClick={() => dispatch(announced(UNDO_MESSAGES[engine.undo()]))}>
-        Undo
-      </button>
-      <button onClick={onShowShortcuts}>Shortcuts</button>
-      <label>
-        Viewing as{' '}
-        <select value={currentUser} onChange={(event) => apply(currentUserChanged(event.target.value))}>
+        <select
+          className="field"
+          aria-label="Owner"
+          value={filters.owner}
+          onChange={(event) => apply(filtersChanged({ owner: event.target.value }))}
+        >
+          <option value="">All owners</option>
           {OWNERS.map((name) => <option key={name}>{name}</option>)}
         </select>
-      </label>
+        <label className="chip">
+          <input
+            type="checkbox"
+            className="check"
+            checked={filters.oldOnly}
+            onChange={(event) => apply(filtersChanged({ oldOnly: event.target.checked }))}
+          />
+          Not touched in 90+ days
+        </label>
+        <label className="chip">
+          <input
+            type="checkbox"
+            className="check"
+            checked={filters.failedOnly}
+            onChange={(event) => apply(filtersChanged({ failedOnly: event.target.checked }))}
+          />
+          Failed
+        </label>
+        {failedCount > 0 && (
+          <button
+            className="rounded-md bg-rose-100 px-2.5 py-1 font-medium text-rose-700 hover:bg-rose-200"
+            onClick={() => apply(filtersChanged({ failedOnly: true }))}
+          >
+            {failedCount.toLocaleString('en-IN')} need attention
+          </button>
+        )}
+      </div>
     </header>
   );
 }

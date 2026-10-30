@@ -14,9 +14,17 @@ function Slider({ label, field, min, max, step, format = String }) {
   }
 
   return (
-    <label>
+    <label className="flex flex-col gap-0.5 text-xs text-slate-600">
       {label}: {format(value)}
-      <input type="range" min={min} max={max} step={step} value={value} onChange={change} />
+      <input
+        type="range"
+        className="w-32 accent-indigo-600"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={change}
+      />
     </label>
   );
 }
@@ -37,16 +45,22 @@ export default function SimPanel() {
   }
 
   return (
-    <details className="sim-panel" open>
-      <summary>Simulator</summary>
-      <div>
+    <details className="flex-none rounded-xl border border-slate-200 bg-white px-4 py-2 shadow-xs">
+      <summary className="cursor-pointer font-medium text-slate-700">
+        Simulator <span className="font-normal text-slate-500">· delays, failures and teammates</span>
+      </summary>
+      <div className="flex flex-wrap items-center gap-4 pt-3 pb-1">
         <Slider label="Min delay" field="minDelay" min={0} max={3000} step={100} format={(v) => `${v}ms`} />
         <Slider label="Max delay" field="maxDelay" min={0} max={5000} step={100} format={(v) => `${v}ms`} />
         <Slider label="Failure rate" field="failureRate" min={0} max={1} step={0.05} format={(v) => `${Math.round(v * 100)}%`} />
         <Slider label="Teammate edits/min" field="editsPerMinute" min={0} max={1200} step={20} />
-        <label><input type="checkbox" checked={paused} onChange={togglePaused} /> Pause teammates</label>
-        <button onClick={() => arm(server.failNextSave, 'Next save will fail')}>Fail next save</button>
-        <button onClick={() => arm(server.forceConflictNextSave, 'Next save will conflict')}>Force conflict on next save</button>
+        <label className="chip">
+          <input type="checkbox" className="check" checked={paused} onChange={togglePaused} /> Pause teammates
+        </label>
+        <button className="btn" onClick={() => arm(server.failNextSave, 'Next save will fail')}>Fail next save</button>
+        <button className="btn" onClick={() => arm(server.forceConflictNextSave, 'Next save will conflict')}>
+          Force conflict on next save
+        </button>
       </div>
     </details>
   );

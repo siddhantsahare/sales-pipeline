@@ -1,74 +1,20 @@
-* { box-sizing: border-box; }
-body { margin: 0; font: 13px system-ui, sans-serif; color: #1a1f2b; background: #fff; }
-button, select, input { font: inherit; }
-:focus-visible { outline: 2px solid #2457d6; outline-offset: 1px; }
+@import 'tailwindcss';
 
-.app { display: flex; flex-direction: column; height: 100vh; }
-
-.top-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #dde1e8; }
-.top-bar button[aria-pressed='true'] { background: #2457d6; color: #fff; }
-.top-bar input[type='search'] { width: 220px; padding: 3px 6px; }
-.push-right { margin-left: auto; }
-
-.stage-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #dde1e8; border-bottom: 1px solid #dde1e8; }
-.stage-strip button { display: flex; flex-direction: column; gap: 2px; padding: 6px 10px; border: 0; background: #f6f7f9; text-align: left; cursor: pointer; }
-.stage-strip button[aria-pressed='true'] { background: #dfe8fd; }
-.stage-strip span { color: #5b6475; }
-
-.table { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-.scroller { flex: 1; overflow: auto; }
-.empty { padding: 24px; text-align: center; color: #5b6475; }
-
-.row {
-  display: grid;
-  grid-template-columns: 20px 125px minmax(120px, 1fr) 90px 110px 60px 85px 85px minmax(130px, 1fr);
-  gap: 8px;
-  align-items: center;
-  height: 36px;
-  padding: 0 12px;
-  border-bottom: 1px solid #eef0f4;
-  white-space: nowrap;
+@layer base {
+  body { @apply bg-slate-100 text-sm text-slate-800 antialiased; }
+  button { @apply cursor-pointer; }
+  kbd { @apply rounded border border-slate-300 bg-white px-1 font-mono text-xs text-slate-500; }
+  :focus-visible { @apply outline-2 outline-offset-1 outline-indigo-500; }
 }
-.row > span { overflow: hidden; text-overflow: ellipsis; }
-.scroller .row { position: absolute; top: 0; left: 0; width: 100%; }
-.header { flex: none; font-weight: 600; background: #f6f7f9; border-bottom: 1px solid #dde1e8; }
-.header button { padding: 0; border: 0; background: none; font-weight: 600; cursor: pointer; }
-.row.selected { background: #eef3ff; }
-.row.focused { box-shadow: inset 3px 0 0 #2457d6; background: #f3f6ff; }
-.row.problem { box-shadow: inset 3px 0 0 #c9302c; }
-.row.problem .status { color: #c9302c; font-weight: 600; }
-.reason { color: #a15c00; }
-.number { text-align: right; }
-.status { color: #5b6475; }
 
-.hint-line { flex: none; margin: 0; padding: 5px 12px; border-bottom: 1px solid #dde1e8; color: #3c4453; }
-.row select { width: 100%; padding: 1px 2px; }
-.row input[type='checkbox'] { margin: 0; }
-.status button { padding: 0 4px; }
-.table { position: relative; }
-.row.stale { opacity: 0.45; }
-.conflict button { padding: 0 4px; }
-.row.problem .status { overflow: visible; }
-.updates-pill { margin-left: 12px; padding: 0 8px; border: 1px solid #c9d6f7; border-radius: 3px; background: #eef3ff; cursor: pointer; }
-.failed-count { border: 1px solid #c9302c; border-radius: 3px; background: #fdecea; color: #c9302c; }
-
-.sim-panel { flex: none; padding: 5px 12px; border-top: 1px solid #dde1e8; }
-.sim-panel summary { cursor: pointer; font-weight: 600; }
-.sim-panel > div { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; padding-top: 6px; }
-.sim-panel label { display: flex; flex-direction: column; gap: 2px; }
-.sim-panel label:has(input[type='checkbox']) { flex-direction: row; align-items: center; }
-
-.bulk-bar { flex: none; display: flex; gap: 20px; align-items: center; padding: 6px 12px; border-top: 1px solid #c9d6f7; background: #eef3ff; }
-.status-line { flex: none; padding: 5px 12px; border-top: 1px solid #dde1e8; background: #f6f7f9; color: #3c4453; }
-
-.overlay { position: fixed; top: 22%; left: 50%; transform: translateX(-50%); z-index: 10; min-width: 280px; padding: 12px 16px; background: #fff; border: 1px solid #c4cad6; border-radius: 6px; box-shadow: 0 8px 28px rgba(20, 28, 45, 0.2); }
-.overlay p { margin: 0 0 8px; }
-.overlay ol { margin: 0; padding: 0; list-style: none; }
-.overlay li button { width: 100%; padding: 5px 6px; border: 0; background: none; text-align: left; cursor: pointer; }
-.overlay li button:hover { background: #f3f6ff; }
-.overlay .hint { margin: 8px 0 0; color: #5b6475; }
-.overlay dl { margin: 0; }
-.overlay dl div { display: flex; gap: 12px; padding: 3px 0; }
-.overlay dt { width: 90px; }
-.overlay dd { margin: 0; }
-kbd { padding: 0 4px; border: 1px solid #c4cad6; border-radius: 3px; background: #f6f7f9; font: 12px ui-monospace, monospace; }
+/* The few looks repeated across components. Everything else is utilities in the JSX. */
+@layer components {
+  .btn { @apply rounded-md border border-slate-300 bg-white px-2.5 py-1 font-medium text-slate-700 shadow-xs hover:bg-slate-50; }
+  .btn-primary { @apply rounded-md bg-indigo-600 px-2.5 py-1 font-medium text-white shadow-xs hover:bg-indigo-700; }
+  .btn-small { @apply rounded border border-slate-300 bg-white px-1.5 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-50; }
+  .field { @apply rounded-md border border-slate-300 bg-white px-2 py-1 shadow-xs; }
+  .check { @apply size-4 accent-indigo-600; }
+  .chip { @apply flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-2 py-1 text-slate-600 shadow-xs; }
+  .dialog { @apply fixed top-1/5 left-1/2 z-10 min-w-72 -translate-x-1/2 rounded-xl border border-slate-200 bg-white p-4 shadow-xl; }
+  .deal-grid { @apply grid items-center gap-x-3 px-4; grid-template-columns: 20px 120px minmax(120px, 1fr) 90px 110px 60px 70px 70px minmax(170px, 1.2fr); }
+}

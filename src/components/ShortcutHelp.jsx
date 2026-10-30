@@ -13,13 +13,17 @@ const SHORTCUTS = [
 
 export default function ShortcutHelp({ onClose }) {
   return (
-    <div className="overlay" role="dialog" aria-label="Keyboard shortcuts">
-      <dl>
+    <div className="dialog" role="dialog" aria-label="Keyboard shortcuts">
+      <h2 className="mb-2 font-medium text-slate-900">Keyboard shortcuts</h2>
+      <dl className="mb-3">
         {SHORTCUTS.map(([key, action]) => (
-          <div key={key}><dt><kbd>{key}</kbd></dt><dd>{action}</dd></div>
+          <div key={key} className="flex gap-3 py-1">
+            <dt className="w-24 flex-none"><kbd>{key}</kbd></dt>
+            <dd className="text-slate-600">{action}</dd>
+          </div>
         ))}
       </dl>
-      <button onClick={onClose}>Close (Esc)</button>
+      <button className="btn" onClick={onClose}>Close (Esc)</button>
     </div>
   );
 }

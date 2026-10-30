@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 export default function LiveRegion() {
   const announcement = useSelector((state) => state.ui.announcement);
   return (
-    <footer className="status-line" aria-live="polite">
+    <footer className="flex-none text-xs text-slate-500" aria-live="polite">
       {announcement || 'Press ? for shortcuts'}
     </footer>
   );

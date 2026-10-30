@@ -44,7 +44,7 @@ Everything works with a mouse or the keyboard.
 
 ## Simulator
 
-The panel at the bottom sets delay, failure rate and teammate activity. **Fail next save** and **Force conflict on next save** trigger those cases on demand.
+Open the **Simulator** panel at the bottom to set delay, failure rate and teammate activity. **Fail next save** and **Force conflict on next save** trigger those cases on demand.
 
 ## How it is organised
 

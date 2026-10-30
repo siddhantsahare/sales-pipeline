@@ -46,11 +46,11 @@ export default function App() {
   }, [confirmStage]);
 
   return (
-    <div className="app">
+    <div className="flex h-screen flex-col gap-3 p-4">
       <TopBar onShowShortcuts={() => setHelpOpen(true)} />
       <StageStrip />
-      <p className="hint-line">
-        Change a deal's stage from its row, or tick several to move them together. Press <kbd>?</kbd> for shortcuts.
+      <p className="flex flex-none items-center gap-3 text-xs text-slate-500">
+        <span>Change a deal's stage from its row, or tick several to move them together. Press <kbd>?</kbd> for shortcuts.</span>
         <UpdatesPill />
       </p>
       <DealTable />
@@ -59,10 +59,14 @@ export default function App() {
         <StagePicker count={selectedCount || 1} onChoose={moveToStage} onCancel={() => setPickerOpen(false)} />
       )}
       {confirmStage && (
-        <div className="overlay" role="alertdialog" aria-label="Confirm bulk move">
-          <p>Move {selectedCount.toLocaleString('en-IN')} deals to {STAGE_LABELS[confirmStage]}?</p>
-          <button ref={confirmButton} onClick={() => runBulkMove(confirmStage)}>Move (Enter)</button>{' '}
-          <button onClick={() => setConfirmStage(null)}>Cancel (Esc)</button>
+        <div className="dialog" role="alertdialog" aria-label="Confirm bulk move">
+          <p className="mb-3 font-medium text-slate-900">
+            Move {selectedCount.toLocaleString('en-IN')} deals to {STAGE_LABELS[confirmStage]}?
+          </p>
+          <div className="flex gap-2">
+            <button className="btn-primary" ref={confirmButton} onClick={() => runBulkMove(confirmStage)}>Move (Enter)</button>
+            <button className="btn" onClick={() => setConfirmStage(null)}>Cancel (Esc)</button>
+          </div>
         </div>
       )}
       {helpOpen && <ShortcutHelp onClose={() => setHelpOpen(false)} />}

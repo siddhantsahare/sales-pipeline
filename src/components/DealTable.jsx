@@ -12,8 +12,8 @@ const COLUMNS = [
   ['value', 'Value', true],
   ['stage', 'Stage', true],
   ['owner', 'Owner', true],
-  ['nextFollowUp', 'Next follow-up', true],
-  ['lastActivity', 'Last activity', true],
+  ['nextFollowUp', 'Follow-up', true],
+  ['lastActivity', 'Last active', true],
   ['status', 'Save status', false],
 ];
 
@@ -54,29 +54,33 @@ export default function DealTable() {
 
   return (
     <main
-      className="table"
+      className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs"
       role="grid"
       aria-label="Deals"
       aria-rowcount={rowIds.length + 1}
       aria-activedescendant={focusedId ? `row-${focusedId}` : undefined}
     >
-      <div className="row header" role="row">
+      <div
+        className="deal-grid h-9 flex-none overflow-hidden border-b border-slate-200 bg-slate-50 text-xs font-medium text-slate-500 [scrollbar-gutter:stable]"
+        role="row"
+      >
         <span role="columnheader">
           <input
             type="checkbox"
+            className="check block"
             aria-label="Select all listed deals"
             checked={allSelected}
             onChange={() => dispatch(allSelected ? selectionCleared() : selectAllVisible())}
           />
         </span>
         {COLUMNS.map(([key, label, sortable]) => (
-          <span key={key} role="columnheader" aria-sort={sort.key === key ? `${sort.dir}ending` : 'none'}>
-            {sortable ? <button onClick={() => toggleSort(key)}>{label}</button> : label}
+          <span key={key} role="columnheader" className={key === 'value' ? 'text-right' : undefined} aria-sort={sort.key === key ? `${sort.dir}ending` : 'none'}>
+            {sortable ? <button className="truncate hover:text-slate-900" onClick={() => toggleSort(key)}>{label}</button> : label}
           </span>
         ))}
       </div>
-      {rowIds.length === 0 && <p className="empty">No deals match this view.</p>}
-      <div className="scroller" ref={scrollerRef}>
+      {rowIds.length === 0 && <p className="p-8 text-center text-slate-500">No deals match this view.</p>}
+      <div className="min-h-0 flex-1 overflow-auto [scrollbar-gutter:stable]" ref={scrollerRef}>
         <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
           {items.map((item) => (
             <DealRow key={rowIds[item.index]} dealId={rowIds[item.index]} index={item.index} start={item.start} />

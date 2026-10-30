@@ -27,4 +27,4 @@ export const BATCH_SIZE = 200;
 export const MAX_REQUESTS = 3;
 export const BULK_CONFIRM_ABOVE = 100;
 export const TEAMMATE_BATCH_MS = 500;
-export const ROW_HEIGHT = 36;
+export const ROW_HEIGHT = 44;
