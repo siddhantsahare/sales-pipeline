@@ -138,6 +138,15 @@ test('bulk at 100% failure finishes', async () => {
   expect(store.getState().ui.bulk).toMatchObject({ failed: 450, moved: 0, active: false });
 });
 
+test('queueing a big bulk move does not dispatch once per deal', () => {
+  const ids = Array.from({ length: 5000 }, (_, i) => `d${i}`);
+  setup(ids.map((id) => deal(id)));
+  const listener = vi.fn();
+  store.subscribe(listener);
+  engine.moveMany(ids, 'lost');
+  expect(listener.mock.calls.length).toBeLessThan(10);
+});
+
 test('moves to the current stage are skipped and counted', async () => {
   setup([deal('d1'), deal('d2', { stage: 'lost' })]);
   engine.moveMany(['d1', 'd2'], 'lost');
