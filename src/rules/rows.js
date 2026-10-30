@@ -15,9 +15,10 @@ export function matchesFilters(deal, ui, pending, today) {
   return true;
 }
 
-function compareByUrgency(a, b, today) {
-  const rank = (deal) => REASONS.indexOf(getReasons(deal, today)[0]);
-  return rank(a) - rank(b) || b.value - a.value;
+// Ranks are worked out once per deal: inside the comparator they'd run millions of times.
+function urgencyComparator(rows, today) {
+  const rank = new Map(rows.map((deal) => [deal.id, REASONS.indexOf(getReasons(deal, today)[0])]));
+  return (a, b) => rank.get(a.id) - rank.get(b.id) || b.value - a.value;
 }
 
 function compareByColumn(a, b, { key, dir }) {
@@ -35,7 +36,7 @@ export function buildRowIds(dealsById, ui, pendingById, today) {
     if (matchesFilters(deal, ui, pendingById[id], today)) rows.push(deal);
   }
   const compare = ui.view === 'today'
-    ? (a, b) => compareByUrgency(a, b, today)
+    ? urgencyComparator(rows, today)
     : (a, b) => compareByColumn(a, b, ui.sort);
   return rows.sort(compare).map((deal) => deal.id);
 }

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { OWNERS } from '../constants.js';
 import { selectFailedCount } from '../store/selectors.js';
@@ -6,6 +7,7 @@ import {
 } from '../store/uiSlice.js';
 
 const VIEWS = [['today', 'My deals today'], ['all', 'All deals']];
+const SEARCH_PAUSE_MS = 150;
 
 export default function TopBar() {
   const dispatch = useDispatch();
@@ -14,10 +16,21 @@ export default function TopBar() {
   const currentUser = useSelector((state) => state.ui.currentUser);
   const failedCount = useSelector(selectFailedCount);
 
+  const [search, setSearch] = useState('');
+
   function apply(action) {
     dispatch(action);
     dispatch(rowsRefreshed());
   }
+
+  // Waits for a pause in typing, so the input never lags behind a 50,000-row rebuild.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      dispatch(filtersChanged({ search }));
+      dispatch(rowsRefreshed());
+    }, SEARCH_PAUSE_MS);
+    return () => clearTimeout(timer);
+  }, [dispatch, search]);
 
   return (
     <header className="top-bar">
@@ -29,8 +42,8 @@ export default function TopBar() {
         type="search"
         placeholder="Search company ( / )"
         aria-label="Search company"
-        value={filters.search}
-        onChange={(event) => apply(filtersChanged({ search: event.target.value }))}
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
       />
       <select
         aria-label="Owner"
