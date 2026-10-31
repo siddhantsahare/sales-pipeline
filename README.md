@@ -1,6 +1,6 @@
 # Sales Pipeline
 
-One keyboard-driven screen for 20 salespeople sharing about 50,000 deals. There is no backend: a fake API inside the app simulates delays, failed saves and teammates' changes.
+One screen for 20 salespeople sharing about 50,000 deals, built to work fully by mouse or keyboard. There is no backend: a fake API inside the app simulates delays, failed saves and teammates' changes.
 
 ## Run it
 
