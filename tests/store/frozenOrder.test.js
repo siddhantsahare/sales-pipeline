@@ -106,3 +106,16 @@ test('choosing a list that still holds the focused deal starts at the top too', 
   store.dispatch(listChanged());
   expect(ui().focusedId).toBe('a');
 });
+
+test('choosing a different list asks the table to scroll', () => {
+  const before = ui().scrollRequest;
+  store.dispatch(filtersChanged({ stage: 'new' }));
+  store.dispatch(listChanged());
+  expect(ui().scrollRequest).toBe(before + 1);
+});
+
+test('a refresh alone leaves the scroll position alone', () => {
+  const before = ui().scrollRequest;
+  store.dispatch(rowsRefreshed());
+  expect(ui().scrollRequest).toBe(before);
+});

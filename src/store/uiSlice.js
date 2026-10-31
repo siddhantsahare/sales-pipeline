@@ -9,6 +9,7 @@ const initialState = {
   currentUser: 'Priya',
   rowIds: [],
   focusedId: null,
+  scrollRequest: 0, // Bumped when the table should bring the focused row into view.
   selectedIds: {}, // Object, not array: each row checks membership on render.
   changedIds: {}, // Deals whose place in the list is out of date until the user refreshes.
   bulk: null,
@@ -30,6 +31,7 @@ const uiSlice = createSlice({
       state.changedIds = {};
     },
     focusChanged(state, action) { state.focusedId = action.payload; },
+    scrollRequested(state) { state.scrollRequest += 1; },
     selectionToggled(state, action) {
       if (state.selectedIds[action.payload]) delete state.selectedIds[action.payload];
       else state.selectedIds[action.payload] = true;
@@ -68,7 +70,7 @@ const uiSlice = createSlice({
 
 export const {
   viewChanged, filtersChanged, sortChanged, currentUserChanged, rowsSet, focusChanged,
-  selectionToggled, selectAllVisible, selectionCleared, listChangesSet, bulkStarted,
+  scrollRequested, selectionToggled, selectAllVisible, selectionCleared, listChangesSet, bulkStarted,
   bulkProgress, bulkFinished, bulkDismissed, announced, simChanged,
 } = uiSlice.actions;
 export default uiSlice.reducer;
@@ -91,6 +93,7 @@ export function listChanged() {
   return (dispatch, getState) => {
     const rowIds = currentRowIds(getState());
     dispatch(rowsSet({ rowIds, focusedId: rowIds[0] ?? null }));
+    dispatch(scrollRequested());
   };
 }
 

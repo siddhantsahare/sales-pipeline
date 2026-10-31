@@ -3,7 +3,8 @@ import { useDispatch, useStore } from 'react-redux';
 import { STAGES, UNDO_MESSAGES } from '../constants.js';
 import { selectDisplayDeal } from '../store/selectors.js';
 import {
-  announced, focusChanged, rowsRefreshed, selectAllVisible, selectionCleared, selectionToggled,
+  announced, focusChanged, rowsRefreshed, scrollRequested, selectAllVisible, selectionCleared,
+  selectionToggled,
 } from '../store/uiSlice.js';
 import { useEngine } from '../sync/EngineContext.js';
 import { resolveKey } from './keymap.js';
@@ -23,7 +24,9 @@ export function useKeyboard({ pickerOpen, confirmStage, setConfirmStage, setPick
     function moveFocus(step) {
       const { rowIds, focusedId } = store.getState().ui;
       const next = rowIds[rowIds.indexOf(focusedId) + step];
-      if (next) dispatch(focusChanged(next));
+      if (!next) return;
+      dispatch(focusChanged(next));
+      dispatch(scrollRequested());
     }
 
     // Esc closes one layer at a time, so cancelling a dialog keeps the selection.
@@ -54,7 +57,10 @@ export function useKeyboard({ pickerOpen, confirmStage, setConfirmStage, setPick
       if (action === 'search') document.getElementById('search').focus();
       if (action === 'undo') dispatch(announced(UNDO_MESSAGES[engine.undo()]));
       if (action === 'retry' && state.pending[focusedId]?.status === 'failed') engine.retry(focusedId);
-      if (action === 'refresh') dispatch(rowsRefreshed());
+      if (action === 'refresh') {
+        dispatch(rowsRefreshed());
+        dispatch(scrollRequested());
+      }
       if (action === 'help') setHelpOpen((open) => !open);
       if (action === 'close') closeTopLayer();
       if (action === 'nextStage') nextStage();

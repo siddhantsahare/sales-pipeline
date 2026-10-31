@@ -22,6 +22,7 @@ export default function DealTable() {
   const { server } = useEngine();
   const rowIds = useSelector((state) => state.ui.rowIds);
   const focusedId = useSelector((state) => state.ui.focusedId);
+  const scrollRequest = useSelector((state) => state.ui.scrollRequest);
   const sort = useSelector((state) => state.ui.sort);
   const selectedCount = useSelector((state) => Object.keys(state.ui.selectedIds).length);
   const allSelected = rowIds.length > 0 && selectedCount === rowIds.length;
@@ -44,7 +45,8 @@ export default function DealTable() {
   useEffect(() => {
     const index = rowIds.indexOf(focusedId);
     if (index >= 0) virtualizer.scrollToIndex(index, { align: 'auto' });
-  }, [focusedId, rowIds, virtualizer]);
+    // Not on every list change: a mouse user's scroll position must survive a refresh.
+  }, [scrollRequest, virtualizer]);
 
   function toggleSort(key) {
     const dir = sort.key === key && sort.dir === 'asc' ? 'desc' : 'asc';
