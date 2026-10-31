@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { STAGES, STAGE_LABELS } from '../constants.js';
-import { filtersChanged, rowsRefreshed } from '../store/uiSlice.js';
+import { filtersChanged, listChanged } from '../store/uiSlice.js';
 
 const formatLakhs = (value) => `₹${(value / 100000).toLocaleString('en-IN', { maximumFractionDigits: 0 })}L`;
 
@@ -11,7 +11,7 @@ export default function StageStrip() {
 
   function toggle(stage) {
     dispatch(filtersChanged({ stage: stage === activeStage ? '' : stage }));
-    dispatch(rowsRefreshed());
+    dispatch(listChanged());
   }
 
   return (

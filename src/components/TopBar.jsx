@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { OWNERS, UNDO_MESSAGES } from '../constants.js';
 import { selectFailedCount } from '../store/selectors.js';
 import {
-  announced, currentUserChanged, filtersChanged, rowsRefreshed, viewChanged,
+  announced, currentUserChanged, filtersChanged, listChanged, viewChanged,
 } from '../store/uiSlice.js';
 import { useEngine } from '../sync/EngineContext.js';
 
@@ -22,14 +22,14 @@ export default function TopBar({ onShowShortcuts }) {
 
   function apply(action) {
     dispatch(action);
-    dispatch(rowsRefreshed());
+    dispatch(listChanged());
   }
 
   // Waits for a pause in typing, so the input never lags behind a 50,000-row rebuild.
   useEffect(() => {
     const timer = setTimeout(() => {
       dispatch(filtersChanged({ search }));
-      dispatch(rowsRefreshed());
+      dispatch(listChanged());
     }, SEARCH_PAUSE_MS);
     return () => clearTimeout(timer);
   }, [dispatch, search]);

@@ -73,12 +73,24 @@ export const {
 } = uiSlice.actions;
 export default uiSlice.reducer;
 
-/** Rebuilds the row order. Called only when the user asks, so rows never jump on their own. */
+function currentRowIds({ deals, pending, ui }) {
+  return buildRowIds(deals.list, ui, pending, new Date());
+}
+
+/** Brings the same list up to date, keeping the user's place. Rows never jump on their own. */
 export function rowsRefreshed() {
   return (dispatch, getState) => {
-    const { deals, pending, ui } = getState();
-    const rowIds = buildRowIds(deals.list, ui, pending, new Date());
+    const { ui } = getState();
+    const rowIds = currentRowIds(getState());
     dispatch(rowsSet({ rowIds, focusedId: refocus(ui.rowIds, rowIds, ui.focusedId) }));
+  };
+}
+
+/** Shows a different list after a new view, filter, search or sort, starting at the top. */
+export function listChanged() {
+  return (dispatch, getState) => {
+    const rowIds = currentRowIds(getState());
+    dispatch(rowsSet({ rowIds, focusedId: rowIds[0] ?? null }));
   };
 }
 

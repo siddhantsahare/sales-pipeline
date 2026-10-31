@@ -2,7 +2,7 @@ import { beforeEach, expect, test, vi } from 'vitest';
 import { createAppStore } from '../../src/store/index.js';
 import { dealsLoaded, dealsUpdated } from '../../src/store/dealsSlice.js';
 import {
-  filtersChanged, focusChanged, listChangesNoted, rowsRefreshed, viewChanged,
+  filtersChanged, focusChanged, listChanged, listChangesNoted, rowsRefreshed, viewChanged,
 } from '../../src/store/uiSlice.js';
 import { createSyncEngine } from '../../src/sync/syncEngine.js';
 
@@ -87,4 +87,22 @@ test('a saved move that takes a deal out of the list counts', async () => {
   await new Promise((resolve) => setTimeout(resolve, 0));
   expect(changedCount()).toBe(1);
   expect(ui().rowIds).toEqual(['a', 'b', 'c']);
+});
+
+test('choosing a different list starts at its first row', () => {
+  store.dispatch(focusChanged('c'));
+  store.dispatch(filtersChanged({ stage: 'won' }));
+  store.dispatch(listChanged());
+  expect(ui().focusedId).toBeNull();
+  store.dispatch(filtersChanged({ stage: 'new' }));
+  store.dispatch(listChanged());
+  expect(ui().focusedId).toBe('a');
+});
+
+test('choosing a list that still holds the focused deal starts at the top too', () => {
+  store.dispatch(focusChanged('c'));
+  store.dispatch(filtersChanged({ search: 'c' }));
+  store.dispatch(filtersChanged({ search: '' }));
+  store.dispatch(listChanged());
+  expect(ui().focusedId).toBe('a');
 });

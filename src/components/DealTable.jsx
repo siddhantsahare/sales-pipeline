@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useDispatch, useSelector } from 'react-redux';
 import { ROW_HEIGHT } from '../constants.js';
-import { rowsRefreshed, selectAllVisible, selectionCleared, sortChanged } from '../store/uiSlice.js';
+import { listChanged, selectAllVisible, selectionCleared, sortChanged } from '../store/uiSlice.js';
 import { useEngine } from '../sync/EngineContext.js';
 import DealRow from './DealRow.jsx';
 
@@ -49,7 +49,7 @@ export default function DealTable() {
   function toggleSort(key) {
     const dir = sort.key === key && sort.dir === 'asc' ? 'desc' : 'asc';
     dispatch(sortChanged({ key, dir }));
-    dispatch(rowsRefreshed());
+    dispatch(listChanged());
   }
 
   return (
