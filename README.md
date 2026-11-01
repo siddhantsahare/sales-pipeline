@@ -1,6 +1,10 @@
 # Sales Pipeline
 
-One screen for 20 salespeople sharing about 50,000 deals, built to work fully by mouse or keyboard. There is no backend: a fake API inside the app simulates delays, failed saves and teammates' changes.
+One screen for 20 salespeople sharing about 50,000 deals, built to work by mouse or keyboard. There is no backend: a fake API inside the app simulates delays, failed saves and teammates' changes.
+
+- **Live app:** https://siddhantsahare.github.io/sales-pipeline/
+- **Screen recording:** https://drive.google.com/file/d/1m7KwX8Uh6zObfZ62H_F7iJI33cyZvp6k/view?usp=sharing
+- **Write-up:** [WRITEUP.md](WRITEUP.md)
 
 ## Run it
 
@@ -24,7 +28,7 @@ npm test
 
 - **Undo:** press **Undo** in the top bar.
 
-Everything works with a mouse or the keyboard.
+The main actions work with a mouse or the keyboard.
 
 ## Shortcuts
 
