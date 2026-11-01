@@ -2,7 +2,7 @@
 
 ## What I built and why
 
-A single virtualised table for one team sharing 50,000 deals. Most complaints were about triage, trust and speed, not about seeing a pipeline. So I focused on telling people what to work on, never losing a save silently, and working fully by mouse or keyboard.
+A single virtualised table for one team sharing 50,000 deals. Most complaints were about triage, trust and speed, not about seeing a pipeline. So I focused on telling people what to work on, never losing a save silently, and working by mouse or keyboard.
 
 **My deals today** shows your open deals that need action, each with a visible reason. **All deals** adds sorting, search and filters, including "Not touched in 90+ days" for quarter-end clean-up. A strip of stage cards keeps a board's overview.
 
@@ -17,7 +17,7 @@ A single virtualised table for one team sharing 50,000 deals. Most complaints we
 
 ## Failed saves and teammates' changes
 
-The screen shows confirmed server data plus a separate list of unsaved moves, so a failed save just removes the move. Each deal has one move in flight and one waiting, and a newer move replaces the waiting one, so saves can't land out of order. Every save carries the version the user was looking at, and the server rejects it if the deal has changed. Late responses and teammate events older than the held version are ignored.
+The screen shows confirmed server data plus a separate list of unsaved moves, so after a failed save the row simply stops showing the move, and there is nothing to roll back. Each deal has one move in flight and one waiting, and a newer move replaces the waiting one, so saves can't land out of order. Every save carries the version the user was looking at, and the server rejects it if the deal has changed. Late responses and teammate events older than the held version are ignored.
 
 | What happens | What the user sees |
 |---|---|
@@ -45,21 +45,23 @@ Bulk moves were the weak spot, because each batch copied a 50,000-key object in 
 
 ## How I verified this
 
-- **Tests:** 76 Vitest tests cover the save logic, store, priority rules and key mapping.
+- **Tests:** 80 Vitest tests cover the save logic, store, priority rules and key mapping.
 - **In the running app:** failed save and retry, conflicts, and a 20,060-deal move at 30% failure. With teammates at maximum, 13 of 5,998 deals changed during a slow bulk move, and all 13 became conflicts.
-- **Independent review:** a fresh AI review found one critical bug, a queued bulk move silently overwriting a teammate's change, and six important issues. All are fixed.
+- **Independent review:** a fresh AI review found one critical bug, a queued bulk move silently overwriting a teammate's change, and seven important issues. All are fixed.
 - **Fresh clone:** a clean clone installs, passes the tests and builds.
 
-**Not verified:** I ran most scenarios by script, not by hand. There are no component or browser tests, and no screen reader or accessibility scan.
+**Not verified:** I ran the main flows by hand for the recording, but most edge cases only by script. There are no component or browser tests, and no screen reader or accessibility scan.
 
 ## Known limits
 
 - Any teammate change causes a conflict unless the deal is already on the wanted stage, even a value edit.
 - There are no automatic retries, so about 1 save in 10 needs a manual retry.
-- A reload resets everything, because the fake server lives in memory.
+- Keep theirs and Apply mine have no shortcut. Keyboard users reach them with `Tab`, which can take many presses.
+- A reload resets everything, because the fake server lives in memory, and closing the tab with unsaved moves gives no warning.
 
 ## What I would do with more time
 
+- With a real backend, move filtering, sorting and bulk moves to the server, and page the data instead of loading 50,000 deals
 - Shrink the pending-moves cost, to smooth out very large bulk moves
 - Add a separate stage version and automatic retries
 - Add bulk undo, bulk cancel and Shift range selection
